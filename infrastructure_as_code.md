@@ -10,8 +10,13 @@ Infrastructure as Code is the provisioning of infrastructure through code instea
 * Cost saving
 * Repeatable
 
-## Who uses it and how?
-* Amazon
+## Use cases
+* Provisioning
+* Testing
+* Security
+
+## Who uses it?
+Companies such as Amaozn and NEtflix use IaC to manage complex and to reduce the time that is put into develping and deploying code over and over again.
 
 ## What is configuration management?
 It is the process of maintaining compuer systems, servers and software in a consistent state. It is a way to ensure that a sysetm runs as expected to as changes are made over time.
