@@ -183,6 +183,75 @@ sudo apt install ansible -y
 * To check what information is currently there use ```sudo ansible all -a "ls"```
   
 
-## Task
-Use ```sudo nano testing.txt``` and write in ```# testing data transfer from controller to web-vm using adhoc command```
+## Task - copying over a file from controller to web VM
+Use ```sudo nano testing.txt``` and write in ```# testing data transfer from controller to web vm using adhoc command```
 1. Use the code ```sudo ansible web -m copy -a "src=/etc/ansible/testing.txt dest=/home/vagrant"```
+
+## Codifying using playbooks
+* Follow all the steps above first
+* In the controller vm cd into ```/etc/ansible```
+* To install nginx create a file using ```sudo nano install-nginx-playbook.yml```
+* Write a comment to say ```# creating a playbook to install nginx in webserver```
+* A YAML file always starts with ---
+* Next write out the following. Each line under the comments have to be two spaces from the start and not tabbed
+```
+---
+
+# where would you like to install nginx
+- hosts: web
+# would you like to see logs
+  gather_facts: yes
+# do we need admin access - sudo
+  become: true
+# add the instructions - commands
+  tasks:
+  - name: Install nginx in web-server
+
+    apt: pkg=nginx state=present 
+# ensure status is running/active
+```
+* Save and exit
+* Use cat install-nginx-playbook.yml to check it has saved
+* To run the playbook use ```sudo ansible-playbook install-nginx-playbook.yml```
+* To check nginx has installed use ```sudo ansible web -a "systemctl status nginx"```
+* We could also enter this IP into a browser ```192.168.33.10```
+
+## How to make a playbook repeatable
+* Go back into the file ```install-nginx-playbook.yml``` and change hosts to all
+* This is how it should look
+```
+# where would you like to install nginx
+- hosts: all
+```
+
+## Creating a playbook to install nodejs
+* Follow all the previous steps to set up controller, web and db VM's
+* In the controller VM cd into ```/etc/ansible```
+* Create a file using ```sudo nano install-nodejs-playbook.yml```
+* Add the following into the file
+```
+---
+
+- hosts: web
+  become: true
+  tasks:
+  - name: Install nodejs in web server
+    apt:
+      name: nodejs
+      state: present
+  - name: Install npm in web server
+    apt:
+      name: npm
+      state: present
+  - name: Install python in web server
+    apt:
+      name: python
+      state: present
+```
+* We can check thatnodejs is working by using ```sudo ansible web -a "nodejs --version"```
+* This should bring up the version that has installed
+* We then need to copy over the app folder from our local storage to our controller VM
+* Use ```scp -r /c/Users/billy/tech221_virtualisation/app vagrant@192.168.33.10:/home/vagrant```
+* Run ```ssh vagrant@192.168.33.10``` to control the web Vm from the controller VM
+* Use ```CD app ```and then start the app using ```node app.js```
+* Then put ```192.168.33.10:3000``` in a browser and the Sparta app should load
