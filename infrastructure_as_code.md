@@ -125,6 +125,9 @@ sudo apt install ansible -y
 12. we can then use ssh vagrant@'IP of VM' to take control of that VM through the controller VM. Answer yes when prompted and then if it asks for a password enter ```vagrant```. The password is invisible
 
 ## Using agent nodes with Ansible
+
+![Alt text](MicrosoftTeams-image.png)
+
 * We need to use vagrant up in VS and ssh into each VM using individual terminals
 * Then update and upgrade each one
 * In controller VM use ```cd /etc/ansible/``` to go to that directory
