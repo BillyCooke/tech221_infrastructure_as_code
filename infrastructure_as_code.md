@@ -230,28 +230,41 @@ Use ```sudo nano testing.txt``` and write in ```# testing data transfer from con
 * Create a file using ```sudo nano install-nodejs-playbook.yml```
 * Add the following into the file
 ```
+# creating a playbook to install nodejs
+# YAML file starts with ---
 ---
+# where would you like to install nodejs?
 
 - hosts: web
-  become: true
-  tasks:
-  - name: Install nodejs in web server
-    apt:
-      name: nodejs
-      state: present
-  - name: Install npm in web server
-    apt:
-      name: npm
-      state: present
-  - name: Install python in web server
-    apt:
-      name: python
-      state: present
+
+# would you like to see the logs?
+
+  gather_facts: yes
+
+# do we need admin access? - "become: true" adds sudo to each command we use
+
+  become: true
+
+# add the instructions - commands. "pkg" = package, "state=present" tells us the status        
+  tasks:
+  - name: Install python
+    apt: pkg=python state=present
+
+  tasks:
+  - name: Install nodejs
+    apt: pkg=nodejs state=present
+
+  tasks:
+  - name: Install npm
+
+    apt: pkg=npm state=present
+# ensure the status of nginx is running/active
 ```
 * We can check thatnodejs is working by using ```sudo ansible web -a "nodejs --version"```
 * This should bring up the version that has installed
 * We then need to copy over the app folder from our local storage to our controller VM
 * Use ```scp -r /c/Users/billy/tech221_virtualisation/app vagrant@192.168.33.10:/home/vagrant```
+* Password is vagrant
 * Run ```ssh vagrant@192.168.33.10``` to control the web Vm from the controller VM
 * Use ```CD app ```and then start the app using ```node app.js```
 * Then put ```192.168.33.10:3000``` in a browser and the Sparta app should load
@@ -280,3 +293,10 @@ Use ```sudo nano testing.txt``` and write in ```# testing data transfer from con
 6. Now run ```sudo ansible-playbook mongo-db-playbook.yml```
 7. After this run ```sudo ansible db -a "systemctl status mongodb"```
 8. You should now see that MongoDB is running
+
+## Connecting Sparta app to DB
+1. In the controller VM use ```ssh vagrant@192.168.33.11``` to take control of the db VM
+2. Then open the mongo config file using sudo nano ```/etc/mongod.conf``` and change the bind_ip to ```0.0.0.0```
+3. Restart and enable mongodb using ```sudo systemctl restart mongodb ```and then ```sudo systemctl enable mongodb```. This implements the changes we just made
+4. Now exit out of the db VM and go into your web VM using ```ssh vagrant@192.168.33.10```
+5. We need to create an environment variable using ```export DB_HOST=mongodb://192.168.33.10:27017/posts```
