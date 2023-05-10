@@ -172,7 +172,7 @@ sudo apt install ansible -y
 * Then next to the IP put ```ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant```
 * Save and exit
 * Use ```cd /etc/ansible/``` and run ```sudo nano ansible.cfg```
-* Add ```host_key_checking = false``` and save and exit
+* Add ```host_key_checking = false``` undeer the defaults section and save and exit
 * Now run ```sudo ansible all -m ping``` and you should get two success messages come back this time
 
 ## Adhoc commands
@@ -256,10 +256,27 @@ Use ```sudo nano testing.txt``` and write in ```# testing data transfer from con
 * Use ```CD app ```and then start the app using ```node app.js```
 * Then put ```192.168.33.10:3000``` in a browser and the Sparta app should load
 
-[web]
-192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass$
+## Installing MongoDb using playbooks
+1. Follow all of the previous steps to set up the controller, web and db VM's
+2. CD into /etc/ansible location
+3. Create a file by using ```sudo nano mongo-db-playbook.yml```
+4. Add the following into it
+```
+---
+# setting up Mongodb in DB-agent-node
 
-[db]
-192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass$
+- hosts: db
+  gather_facts: yes
 
+  become: true
 
+# adding the instructions to install mongodb and status running
+
+  tasks:
+  - name: configuring Mongo-db in db agent node
+    apt: pkg=mongodb state=present
+```
+5. Save and exit
+6. Now run ```sudo ansible-playbook mongo-db-playbook.yml```
+7. After this run ```sudo ansible db -a "systemctl status mongodb"```
+8. You should now see that MongoDB is running
