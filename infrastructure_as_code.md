@@ -255,3 +255,11 @@ Use ```sudo nano testing.txt``` and write in ```# testing data transfer from con
 * Run ```ssh vagrant@192.168.33.10``` to control the web Vm from the controller VM
 * Use ```CD app ```and then start the app using ```node app.js```
 * Then put ```192.168.33.10:3000``` in a browser and the Sparta app should load
+
+[web]
+192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass$
+
+[db]
+192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass$
+
+
