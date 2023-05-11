@@ -300,3 +300,58 @@ Use ```sudo nano testing.txt``` and write in ```# testing data transfer from con
 3. Restart and enable mongodb using ```sudo systemctl restart mongodb ```and then ```sudo systemctl enable mongodb```. This implements the changes we just made
 4. Now exit out of the db VM and go into your web VM using ```ssh vagrant@192.168.33.10```
 5. We need to create an environment variable using ```export DB_HOST=mongodb://192.168.33.10:27017/posts```
+6. Then cd into the app folder
+7. Run ```npm install``` and then ```node app.js```
+8. Use the IP ```192.168.33.10:3000/posts``` in a browser to view the posts page on the Sparta app
+
+## Creating a playbook to configure mongodb config file
+1. Make sure you are in the location /etc/ansible in the controller VM and then create a file using ```sudo nano mongo-conf.yml```
+2. Then add the following into the file
+```
+---
+
+- hosts: db
+
+  gather_facts: yes
+
+  become: true
+
+  tasks:
+  - name: change bing_ip in mongodb.conf
+    lineinfile:
+      path: /etc/mongodb.conf
+      regexp: 'bind_ip = 0.0.0.10'
+      line: 'bind_ip = 0.0.0.0'
+      backrefs: yes
+
+  - name: restart mongodb
+    shell: systemctl restart mongodb
+
+  - name: enable mongodb
+    shell: systemctl enable mongodb
+```
+3. Save and exit
+4. Run ```sudo ansible-playbook mongo-conf.yml``` to implement the playbook
+5. We can use ```sudo ansible db -a "systemctl status mongodb"``` to check if mongodb is running
+
+## Creating a playbook to add an environment variable
+1. Make sure you are in the location /etc/ansible in the controller VM and then create a file using ```sudo nano app-env.yml```
+2. Add the following into it
+```
+---
+
+- hosts: web
+
+  gather_facts: yes
+
+  become: true
+
+  tasks:
+  - name: create DB_HOST
+    shell: export DB_HOST=mongodb://192.168.33.11:27017/posts
+```
+3. Use ```sudo ansible-playbook app-env.yml``` to implement the playbook
+4. Take control of the web VM using ```ssh vagrant@192.168.33.10```
+5. CD into app
+6. Run ```npm install``` and ```node app.js```
+7. Use the IP ```192.168.33.10:3000/posts``` in a browser to view the posts page on the Sparta app
